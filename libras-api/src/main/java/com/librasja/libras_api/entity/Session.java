@@ -21,7 +21,7 @@ public class Session {
     private Long interpreterId;
 
     @Column(nullable = false)
-    private String status; // PENDENTE, CONECTADO, FINALIZADO, CANCELADO
+    private String status; // agora aceita qualquer valor enviado no body
 
     @Column(name = "started_at")
     private LocalDateTime startedAt;
@@ -37,19 +37,26 @@ public class Session {
     @JsonIgnore
     private List<Feedback> feedbacks = new ArrayList<>();
 
-    // Getters e Setters
+    // -------------------- Getters e Setters --------------------
     public Long getId() { return id; }
+
     public Long getRequesterId() { return requesterId; }
     public void setRequesterId(Long requesterId) { this.requesterId = requesterId; }
+
     public Long getInterpreterId() { return interpreterId; }
     public void setInterpreterId(Long interpreterId) { this.interpreterId = interpreterId; }
+
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+
     public LocalDateTime getStartedAt() { return startedAt; }
     public void setStartedAt(LocalDateTime startedAt) { this.startedAt = startedAt; }
+
     public LocalDateTime getEndedAt() { return endedAt; }
     public void setEndedAt(LocalDateTime endedAt) { this.endedAt = endedAt; }
+
     public LocalDateTime getCreatedAt() { return createdAt; }
+
     public List<Feedback> getFeedbacks() { return feedbacks; }
     public void setFeedbacks(List<Feedback> feedbacks) { this.feedbacks = feedbacks; }
 }

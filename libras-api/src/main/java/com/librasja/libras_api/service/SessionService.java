@@ -17,7 +17,6 @@ public class SessionService {
     }
 
     public Session createSession(Session session) {
-        session.setStatus("PENDENTE");
         return sessionRepository.save(session);
     }
 
