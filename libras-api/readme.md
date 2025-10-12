@@ -2,21 +2,17 @@
 
 ## Integrantes do Grupo
 [Letícia Sousa Prado] - RM 559258  
-
 Responsabilidade: Java e banco de dados  
 
 [Jennyfer Lee] - RM 561020  
-
 Responsabilidade: .Net e Iot  
 
 [Ivanildo Alfredo] - RM 560049  
-
 Responsabilidade: Mobile, QA e DevOps. 
 
 ### Público-Alvo
 - **Pessoas surdas** que necessitam de serviços de interpretação
 - **Intérpretes de Libras** profissionais
-- **Instituições de ensino** e empresas que oferecem acessibilidade
 
 ### Problemas que a Aplicação Resolve
 1. **Falta de rastreabilidade**: Registra todas as sessões e seu histórico
@@ -69,21 +65,17 @@ mvn spring-boot:run
 
 4. **Acesse a aplicação**
 - API: http://localhost:8080
-- Swagger UI: http://localhost:8080/swagger-ui.html
-- OpenAPI Docs: http://localhost:8080/v3/api-docs
 
 ---
 
 ## Vídeo de Apresentação
+https://youtu.be/ZGvI0K_um1k / https://www.youtube.com/watch?v=ZGvI0K_um1k
+(são o mesmo video, caso não consiga no link tentar o outro )
 
-**[Link para o vídeo no YouTube]** (inserir link após gravação)
 
 No vídeo apresentamos:
 - Proposta tecnológica e contexto social
 - Público-alvo e problemas resolvidos
-- Arquitetura e diagramas do sistema
-- Demonstração ao vivo dos endpoints
-- Testes de persistência no banco Oracle
 
 ---
 
@@ -136,14 +128,7 @@ Lista todos os feedbacks
 
 ## Diagramas
 
-### Diagrama de Classes
-![Diagrama de Classes](docs/diagrama-classes.png)
-
-### DER (Diagrama Entidade-Relacionamento)
-![DER](docs/der.png)
-
-### Arquitetura da Aplicação
-![Arquitetura](docs/arquitetura.png)
+Estão na documentação enviada, no readme não consegui colocar nenhuma imagem.
 
 ---
 
