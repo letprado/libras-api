@@ -1,20 +1,25 @@
 # Libras API - Sistema de Gestão de Sessões de Interpretação
 
 ## Integrantes do Grupo
-[Letícia Sousa Prado] - RM 559258  
-Responsabilidade: Java e banco de dados  
 
-[Jennyfer Lee] - RM 561020  
-Responsabilidade: .Net e Iot  
+**[Letícia Sousa Prado]** - RM 559258  
+**Responsabilidade:** Java e banco de dados - Implementação da API, HATEOAS, JPA/Hibernate, documentação
 
-[Ivanildo Alfredo] - RM 560049  
-Responsabilidade: Mobile, QA e DevOps. 
+**[Jennyfer Lee]** - RM 561020  
+**Responsabilidade:** .NET e IoT - Revisão e testes de integração
 
-### Público-Alvo
+**[Ivanildo Alfredo]** - RM 560049  
+**Responsabilidade:** Mobile, QA e DevOps - Validação dos testes e DevOps
+
+---
+
+## Público-Alvo
+
 - **Pessoas surdas** que necessitam de serviços de interpretação
 - **Intérpretes de Libras** profissionais
 
-### Problemas que a Aplicação Resolve
+## Problemas que a Aplicação Resolve
+
 1. **Falta de rastreabilidade**: Registra todas as sessões e seu histórico
 2. **Ausência de feedback**: Permite avaliar a qualidade do serviço
 3. **Gestão manual**: Automatiza o controle de sessões de interpretação
@@ -26,10 +31,10 @@ Responsabilidade: Mobile, QA e DevOps.
 
 - **Java 17**
 - **Spring Boot 3.3.4**
-- **Spring Data JPA**
-- **Hibernate**
+- **Spring Data JPA** + **Hibernate**
+- **Spring HATEOAS** (Nível 3 REST)
 - **Oracle Database**
-- **Swagger/OpenAPI 2.5.0**
+- **Swagger/OpenAPI**
 - **Maven**
 
 ---
@@ -64,14 +69,14 @@ mvn spring-boot:run
 ```
 
 4. **Acesse a aplicação**
-- API: http://localhost:8080
+- API Base: http://localhost:8080
+- Swagger UI: http://localhost:8080/swagger-ui.html
 
 ---
 
 ## Vídeo de Apresentação
-https://youtu.be/ZGvI0K_um1k / https://www.youtube.com/watch?v=ZGvI0K_um1k
-(são o mesmo video, caso não consiga no link tentar o outro )
 
+**Link:** https://youtu.be/ZGvI0K_um1k
 
 No vídeo apresentamos:
 - Proposta tecnológica e contexto social
@@ -79,12 +84,46 @@ No vídeo apresentamos:
 
 ---
 
-## Documentação da API (Endpoints)
+## Diagramas
+
+### Arquitetura do Sistema
+![Diagrama de Arquitetura](documentacao/diagrama-arquitetura.png)
+
+### Diagrama Entidade-Relacionamento (DER)
+![Diagrama DER](documentacao/diagrama-der.png)
+
+### Diagrama de Classes das Entidades
+![Diagrama de Classes](documentacao/diagrama-classes.png)
+
+---
+
+## Evolução Sprint 1 → Sprint 2
+
+### Sprint 1
+- API REST básica com Spring Boot
+- Entidades JPA (Session e Feedback)
+- Mapeamento ORM com @OneToMany, @ManyToOne
+- Endpoints CRUD básicos
+- Integração com Oracle Database
+
+### Sprint 2
+- **Implementação de HATEOAS nível 3** (Richardson Maturity Model)
+- **Links hipermedia** em todas as respostas (_links, self, all-sessions, start, finish)
+- **Refatoração** dos controllers para EntityModel e CollectionModel
+- **Documentação completa** no repositório
+- **Coleção de testes** Postman exportada
+- **Cronograma detalhado** de desenvolvimento  
+
+---
+
+## Documentação da API
 
 ### Sessions
 
 #### `POST /sessions`
-Cria uma nova sessão de interpretação
+Cria uma nova sessão de interpretação.
+
+**Request Body:**
 ```json
 {
   "requesterId": 1,
@@ -93,24 +132,42 @@ Cria uma nova sessão de interpretação
 }
 ```
 
+**Response com HATEOAS:**
+```json
+{
+  "id": 1,
+  "requesterId": 1,
+  "interpreterId": 2,
+  "status": "PENDENTE",
+  "_links": {
+    "self": {"href": "http://localhost:8080/sessions/1"},
+    "all-sessions": {"href": "http://localhost:8080/sessions"},
+    "start": {"href": "http://localhost:8080/sessions/1/start"},
+    "finish": {"href": "http://localhost:8080/sessions/1/finish"}
+  }
+}
+```
+
 #### `GET /sessions`
-Lista todas as sessões
+Lista todas as sessões com links HATEOAS.
 
 #### `GET /sessions/{id}`
-Busca uma sessão específica
+Busca uma sessão específica por ID.
 
 #### `POST /sessions/{id}/start`
-Inicia uma sessão (muda status para CONECTADO)
+Inicia uma sessão (status: CONECTADO).
 
 #### `POST /sessions/{id}/finish`
-Finaliza uma sessão (muda status para FINALIZADO)
+Finaliza uma sessão (status: FINALIZADO).
 
 ---
 
 ### Feedbacks
 
 #### `POST /feedbacks`
-Cria um novo feedback para uma sessão
+Cria um novo feedback para uma sessão.
+
+**Request Body:**
 ```json
 {
   "session": {
@@ -121,188 +178,104 @@ Cria um novo feedback para uma sessão
 }
 ```
 
+**Validações:**
+- `rating` deve estar entre 1 e 5 (usando @Min e @Max)
+
 #### `GET /feedbacks`
-Lista todos os feedbacks
+Lista todos os feedbacks com links HATEOAS.
 
 ---
 
-## Diagramas
+## Mapeamento JPA/Hibernate
 
-Estão na documentação enviada, no readme não consegui colocar nenhuma imagem.
+### Entidade Session
+- `@Entity` + `@Table(name = "sessions")`
+- Chave primária: `@Id` + `@GeneratedValue(strategy = GenerationType.IDENTITY)`
+- Relacionamento: `@OneToMany(mappedBy = "session")` com Feedback
+- Campos obrigatórios: requesterId, interpreterId, status
+
+### Entidade Feedback
+- `@Entity` + `@Table(name = "FEEDBACKS")`
+- Chave primária: `@Id` + `@GeneratedValue(strategy = GenerationType.IDENTITY)`
+- Relacionamento: `@ManyToOne` + `@JoinColumn(name = "session_id")` com Session
+- Validação Bean Validation: `@Min(1)` + `@Max(5)` para rating
+
+---
+
+## Constraints e Relacionamentos
+
+- **Relacionamento:** Session (1) ↔ Feedback (N)
+- **Chave Estrangeira:** Feedback.session_id → Session.id (NOT NULL)
+- **Constraints:** Todos os campos marcados com nullable = false
+- **Validações:** Rating entre 1 e 5 estrelas
+- **Timestamps:** createdAt automático
+
+---
+
+## HATEOAS (Nível 3 REST)
+
+A API implementa **HATEOAS (Hypermedia as the Engine of Application State)** nível 3 do Richardson Maturity Model:
+
+- Todas as respostas incluem links para navegação
+- Cliente descobre as ações disponíveis através dos links
+- Links incluem: self, all-sessions, start, finish, all-feedbacks
+- CollectionModel para listagens com links embutidos
 
 ---
 
 ## Cronograma de Desenvolvimento
 
-### Sprint 1 (12/10/2025) - CONCLUÍDO
-**Responsável:** Letícia Sousa Prado
-
-**Atividades realizadas:**
-- Implementação da API REST em Java com Spring Boot
-- Criação das entidades JPA: Session e Feedback
-- Mapeamento correto das relações entre entidades (@ManyToOne, @JoinColumn)
-- Criação de endpoints REST para inserir sessões e feedbacks
-- Testes iniciais dos endpoints via Postman
-- Garantia de persistência e recuperação de dados no banco
-
-**Status:** Funcionalidades básicas implementadas, API integrada com o banco de dados, endpoints testados e funcionando
-
-### Sprint 2 (Próxima) 
-
-
-**Atividades planejadas:**
-- Implementar validações mais robustas nos endpoints (rating entre 1 e 5, sessões válidas)
-- Melhorar tratamento de erros e respostas da API
-- Integração completa com app móvel para CRUD de sessões e feedbacks
+Veja o cronograma detalhado da Sprint 2: [CRONOGRAMA_SPRINT_2.md](documentacao/CRONOGRAMA_SPRINT_2.md)
 
 ---
 
-## Arquitetura e Classes de Domínio
+## Testes
 
-### CLASSE SESSION - ENTIDADE PRINCIPAL
+Coleção completa de testes do Postman disponível em:
+**`documentacao/Libras_API_Collection.json`**
 
-A classe Session representa uma sessão de interpretação em Libras e demonstra o mapeamento objeto-relacional com JPA/Hibernate:
+Os testes incluem:
+- Validação de status codes
+- Verificação de HATEOAS links
+- Validação de persistência de dados
+- Testes de rating (1-5)
 
-```java
-package com.librasja.libras_api.entity;
+### Swagger UI
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+A API possui documentação interativa via Swagger UI:
 
-@Entity
-@Table(name = "sessions")
-public class Session {
+![Swagger UI - Libras API](documentacao/imagem_swagger_libras_api.png)
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+### Demonstração de Testes no Postman
 
-    @Column(name = "requester_id", nullable = false)
-    private Long requesterId;
+#### GET /sessions
+![GET Sessions](documentacao/imagem_postman_GET_SESSIONS.png)
 
-    @Column(name = "interpreter_id", nullable = false)
-    private Long interpreterId;
+#### GET /sessions/{id}
+![GET Session por ID](documentacao/imagem_postman_GET_SESSIONS_ID.png)
 
-    @Column(nullable = false)
-    private String status; // PENDENTE, CONECTADO, FINALIZADO, CANCELADO
+#### POST /sessions/{id}/start
+![Start Session](documentacao/imagem_postman_POST_SESSIONS_ID_START.png)
 
-    @Column(name = "started_at")
-    private LocalDateTime startedAt;
+#### GET /feedbacks
+![GET Feedbacks](documentacao/imagem_postman_GET_FEEDBACKS.png)
 
-    @Column(name = "ended_at")
-    private LocalDateTime endedAt;
-
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
-
-    @OneToMany(mappedBy = "session", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<Feedback> feedbacks = new ArrayList<>();
-
-    // Getters e Setters...
-}
-```
-
-**PRINCIPAIS ANOTAÇÕES JPA IMPLEMENTADAS:**
-- `@Entity`: Marca a classe como entidade JPA que será persistida no banco
-- `@Table(name = "sessions")`: Define o nome da tabela no banco Oracle
-- `@Id + @GeneratedValue(strategy = GenerationType.IDENTITY)`: Configura chave primária com auto-incremento
-- `@Column`: Define propriedades das colunas (nullable, name, etc.)
-- `@OneToMany(mappedBy = "session", cascade = CascadeType.ALL)`: Estabelece relacionamento um-para-muitos com Feedback
-- `@JsonIgnore`: Evita serialização recursiva infinita no JSON
-
-### CLASSE FEEDBACK - ENTIDADE COM RELACIONAMENTO
-
-A classe Feedback representa uma avaliação de sessão e demonstra relacionamentos JPA e validações Bean Validation:
-
-```java
-package com.librasja.libras_api.entity;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import java.time.LocalDateTime;
-
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@Entity
-@Table(name = "FEEDBACKS")
-public class Feedback {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "session_id", nullable = false)
-    private Session session;
-
-    @Min(1)
-    @Max(5)
-    @Column(name = "rating", nullable = false)
-    private Integer rating;
-
-    @Column(name = "comentario")
-    private String comentario;
-
-    @Column(name = "created_at", nullable = false, insertable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    // Getters e Setters...
-}
-```
-
-**PRINCIPAIS ANOTAÇÕES JPA IMPLEMENTADAS:**
-- `@ManyToOne(fetch = FetchType.EAGER)`: Define relacionamento muitos-para-um com Session
-- `@JoinColumn(name = "session_id", nullable = false)`: Cria chave estrangeira obrigatória
-- `@Min(1) @Max(5)`: Validação Bean Validation que garante rating entre 1 e 5 estrelas
-- `@Column(insertable = false, updatable = false)`: Campo created_at gerenciado automaticamente pelo banco
+#### POST /feedbacks
+![POST Feedback](documentacao/imagem_postman_POST_FEEDBACKS.png)
 
 ---
 
-## Explicação do Relacionamento e Constraints
+## Documentação Adicional
 
-### RELACIONAMENTO PRINCIPAL: Session ↔ Feedback
-
-**Tipo:** Um-para-Muitos (1:N)
-- Uma sessão pode ter vários feedbacks
-- Um feedback pertence a apenas uma sessão
-
-**Como funciona no código:**
-- Na classe Session: `@OneToMany(mappedBy = "session")`
-- Na classe Feedback: `@ManyToOne` com `@JoinColumn(name = "session_id")`
-
-### CONSTRAINTS (REGRAS) IMPLEMENTADAS
-
-1. **Chaves Primárias (PK):**
-   - Session.id = chave primária (identificador único)
-   - Feedback.id = chave primária (identificador único)
-
-2. **Chave Estrangeira (FK):**
-   - Feedback.session_id → referencia Session.id
-   - Constraint: nullable = false (feedback DEVE ter uma sessão)
-
-3. **Campos Obrigatórios (NOT NULL):**
-   - Session.requesterId = obrigatório (deve ter solicitante)
-   - Session.interpreterId = obrigatório (deve ter intérprete)
-   - Session.status = obrigatório (deve ter status)
-   - Feedback.rating = obrigatório (deve ter avaliação)
-
-4. **Validação de Rating:**
-   - @Min(1) e @Max(5) = rating deve estar entre 1 e 5 estrelas
-
-5. **Timestamps Automáticos:**
-   - Session.createdAt = preenchido automaticamente pela aplicação
-   - Feedback.createdAt = preenchido automaticamente pelo banco
+- [Cronograma Sprint 2](documentacao/CRONOGRAMA_SPRINT_2.md)
+- [Coleção Postman](documentacao/Libras_API_Collection.json)
+- [Diagramas](documentacao/)
 
 ---
 
 ## Licença
 
-Este projeto foi desenvolvido como trabalho acadêmico para a disciplina Java Advanced - FIAP.
+Este projeto foi desenvolvido como trabalho acadêmico para a disciplina **Java Advanced - FIAP**.
 
 ---
 
