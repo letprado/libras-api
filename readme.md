@@ -87,13 +87,13 @@ No vídeo apresentamos:
 ## Diagramas
 
 ### Arquitetura do Sistema
-![Diagrama de Arquitetura](documentacao/diagrama-arquitetura.png)
+![Diagrama de Arquitetura](libras-api/documentacao/diagrama-arquitetura.png)
 
 ### Diagrama Entidade-Relacionamento (DER)
-![Diagrama DER](documentacao/diagrama-der.png)
+![Diagrama DER](libras-api/documentacao/diagrama-der.png)
 
 ### Diagrama de Classes das Entidades
-![Diagrama de Classes](documentacao/diagrama-classes.png)
+![Diagrama de Classes](libras-api/documentacao/diagrama-classes.png)
 
 ---
 
@@ -225,14 +225,14 @@ A API implementa **HATEOAS (Hypermedia as the Engine of Application State)** ní
 
 ## Cronograma de Desenvolvimento
 
-Veja o cronograma detalhado da Sprint 2: [CRONOGRAMA_SPRINT_2.md](documentacao/CRONOGRAMA_SPRINT_2.md)
+Veja o cronograma detalhado da Sprint 2: [CRONOGRAMA_SPRINT_2.md](libras-api/documentacao/CRONOGRAMA_SPRINT_2.md)
 
 ---
 
 ## Testes
 
 Coleção completa de testes do Postman disponível em:
-**`documentacao/Libras_API_Collection.json`**
+**`libras-api/documentacao/Libras_API_Collection.json`**
 
 Os testes incluem:
 - Validação de status codes
@@ -244,32 +244,32 @@ Os testes incluem:
 
 A API possui documentação interativa via Swagger UI:
 
-![Swagger UI - Libras API](documentacao/imagem_swagger_libras_api.png)
+![Swagger UI - Libras API](libras-api/documentacao/imagem_swagger_libras_api.png)
 
 ### Demonstração de Testes no Postman
 
 #### GET /sessions
-![GET Sessions](documentacao/imagem_postman_GET_SESSIONS.png)
+![GET Sessions](libras-api/documentacao/imagem_postman_GET_SESSIONS.png)
 
 #### GET /sessions/{id}
-![GET Session por ID](documentacao/imagem_postman_GET_SESSIONS_ID.png)
+![GET Session por ID](libras-api/documentacao/imagem_postman_GET_SESSIONS_ID.png)
 
 #### POST /sessions/{id}/start
-![Start Session](documentacao/imagem_postman_POST_SESSIONS_ID_START.png)
+![Start Session](libras-api/documentacao/imagem_postman_POST_SESSIONS_ID_START.png)
 
 #### GET /feedbacks
-![GET Feedbacks](documentacao/imagem_postman_GET_FEEDBACKS.png)
+![GET Feedbacks](libras-api/documentacao/imagem_postman_GET_FEEDBACKS.png)
 
 #### POST /feedbacks
-![POST Feedback](documentacao/imagem_postman_POST_FEEDBACKS.png)
+![POST Feedback](libras-api/documentacao/imagem_postman_POST_FEEDBACKS.png)
 
 ---
 
 ## Documentação Adicional
 
-- [Cronograma Sprint 2](documentacao/CRONOGRAMA_SPRINT_2.md)
-- [Coleção Postman](documentacao/Libras_API_Collection.json)
-- [Diagramas](documentacao/)
+- [Cronograma Sprint 2](libras-api/documentacao/CRONOGRAMA_SPRINT_2.md)
+- [Coleção Postman](libras-api/documentacao/Libras_API_Collection.json)
+- [Diagramas](libras-api/documentacao/)
 
 ---
 
@@ -282,3 +282,4 @@ Este projeto foi desenvolvido como trabalho acadêmico para a disciplina **Java 
 ## Repositório
 
 **GitHub:** https://github.com/letprado/libras-api.git
+
