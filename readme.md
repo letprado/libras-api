@@ -270,7 +270,7 @@ A API possui documentação interativa via Swagger UI:
 - [Cronograma Sprint 2](libras-api/documentacao/CRONOGRAMA_SPRINT_2.md)
 - [Coleção Postman](libras-api/documentacao/Libras_API_Collection.json)
 - [Diagramas](libras-api/documentacao/)
-- [Instruções Deploy](documentacao/instrucoes_deploy_librasja.md)
+- [Instruções Deploy](libras-api/documentacao/instrucoes_deploy_librasja.md)
 
 
 ---
@@ -289,3 +289,4 @@ Este projeto foi desenvolvido como trabalho acadêmico para a disciplina **Java 
 
 =======
 >>>>>>> ffba8d04cbd5af8509d29eb37164d5cf466d30bf
+
