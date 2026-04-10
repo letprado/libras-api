@@ -38,9 +38,11 @@ public class SessionSchedule {
     private String description;
 
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     @Column(nullable = false)
     private ScheduleStatus status = ScheduleStatus.SCHEDULED;
 
+    @Builder.Default
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 

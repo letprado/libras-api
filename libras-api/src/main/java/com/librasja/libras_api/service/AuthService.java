@@ -61,7 +61,7 @@ public class AuthService {
             String token = jwtTokenProvider.generateTokenFromUsername(user.getUsername());
             log.info("=== REGISTRO CONCLUÍDO COM SUCESSO ===");
 
-            return new JwtAuthResponseDto(token, user.getUsername(), user.getRole().toString());
+            return new JwtAuthResponseDto(token, user.getId(), user.getUsername(), user.getRole().toString());
         } catch (Exception e) {
             log.error("ERRO AO REGISTRAR USUÁRIO", e);
             throw e;
@@ -81,6 +81,6 @@ public class AuthService {
         User user = userRepository.findByUsername(authentication.getName())
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-        return new JwtAuthResponseDto(token, user.getUsername(), user.getRole().toString());
+        return new JwtAuthResponseDto(token, user.getId(), user.getUsername(), user.getRole().toString());
     }
 }

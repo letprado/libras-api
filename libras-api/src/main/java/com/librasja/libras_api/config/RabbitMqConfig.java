@@ -1,11 +1,13 @@
 package com.librasja.libras_api.config;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.amqp.core.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@ConditionalOnProperty(name = "app.rabbitmq.enabled", havingValue = "true")
 public class RabbitMqConfig {
 
     public static final String SESSION_EXCHANGE = "libras.sessions.exchange";

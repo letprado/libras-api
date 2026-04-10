@@ -1,17 +1,36 @@
 version: '3.8'
 
 services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: librasja-rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - libras-network
+
   app:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: librasja-backend
     restart: always
+    depends_on:
+      - rabbitmq
     ports:
       - "8080:8080"
     user: "1000:1000"
     environment:
       SPRING_PROFILES_ACTIVE: prod
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
     networks:
       - libras-network
 

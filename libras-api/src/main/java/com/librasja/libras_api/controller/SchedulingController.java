@@ -43,9 +43,9 @@ public class SchedulingController {
     @DeleteMapping("/{scheduleId}/cancel")
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Cancelar agendamento", description = "Cancela um agendamento de sessão")
-    public ResponseEntity<Void> cancelSchedule(@PathVariable Long scheduleId) {
+    public ResponseEntity<String> cancelSchedule(@PathVariable Long scheduleId) {
         schedulingService.cancelSchedule(scheduleId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok("Agendamento cancelado com sucesso");
     }
 
     @GetMapping("/interpreter/{interpreterId}")

@@ -34,9 +34,16 @@ public class Feedback {
     @Schema(description = "Comentário opcional sobre a sessão", example = "Excelente atendimento!")
     private String comentario;
 
-    @Column(name = "created_at", nullable = false, insertable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     @Schema(description = "Data e hora de criação do feedback", example = "2025-11-01T21:30:00")
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    @PrePersist
+    public void prePersist() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+    }
 
     public Long getId() {
         return id;

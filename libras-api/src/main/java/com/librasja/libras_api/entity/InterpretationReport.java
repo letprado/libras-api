@@ -24,12 +24,15 @@ public class InterpretationReport {
     @JoinColumn(name = "interpreter_id", nullable = false)
     private User interpreter;
 
+    @Builder.Default
     @Column(name = "total_sessions", nullable = false)
     private Integer totalSessions = 0;
 
+    @Builder.Default
     @Column(name = "total_feedbacks", nullable = false)
     private Integer totalFeedbacks = 0;
 
+    @Builder.Default
     @Column(name = "average_rating")
     private Double averageRating = 0.0;
 
@@ -39,9 +42,11 @@ public class InterpretationReport {
     @Column(name = "period_end", nullable = false)
     private LocalDateTime periodEnd;
 
+    @Builder.Default
     @Column(name = "generated_at", nullable = false)
     private LocalDateTime generatedAt = LocalDateTime.now();
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ReportStatus status = ReportStatus.PENDING;

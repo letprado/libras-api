@@ -5,10 +5,12 @@ import com.librasja.libras_api.dto.FeedbackEventDto;
 import com.librasja.libras_api.dto.SessionEventDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
+@ConditionalOnProperty(name = "app.rabbitmq.enabled", havingValue = "true")
 public class EventConsumer {
 
     @RabbitListener(queues = RabbitMqConfig.SESSION_CREATED_QUEUE)
