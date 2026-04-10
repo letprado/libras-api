@@ -1,0 +1,325 @@
+{
+	"info": {
+		"_postman_id": "libras-api-sprint2",
+		"name": "Libras API - Sprint 2",
+		"description": "Coleção de testes da API de Gestão de Sessões de Interpretação Libras com HATEOAS",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Sessions",
+			"item": [
+				{
+					"name": "Criar Sessão",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Response has HATEOAS links\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('_links');",
+									"    pm.expect(jsonData._links).to.have.property('self');",
+									"    pm.expect(jsonData._links).to.have.property('all-sessions');",
+									"    pm.expect(jsonData._links).to.have.property('start');",
+									"    pm.expect(jsonData._links).to.have.property('finish');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"requesterId\": 1,\n    \"interpreterId\": 2,\n    \"status\": \"PENDENTE\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/sessions",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["sessions"]
+						},
+						"description": "Cria uma nova sessão de interpretação"
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Todas as Sessões",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Response has HATEOAS collection\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('_embedded');",
+									"    pm.expect(jsonData).to.have.property('_links');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/sessions",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["sessions"]
+						},
+						"description": "Lista todas as sessões de interpretação"
+					},
+					"response": []
+				},
+				{
+					"name": "Buscar Sessão por ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 or 404\", function () {",
+									"    pm.expect([200, 404]).to.include(pm.response.code);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/sessions/:id",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["sessions", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Busca uma sessão específica por ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Iniciar Sessão",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 or 404\", function () {",
+									"    pm.expect([200, 404]).to.include(pm.response.code);",
+									"});",
+									"pm.test(\"Session status is CONECTADO\", function () {",
+									"    if (pm.response.code === 200) {",
+									"        var jsonData = pm.response.json();",
+									"        pm.expect(jsonData.status).to.eql('CONECTADO');",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/sessions/:id/start",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["sessions", ":id", "start"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Inicia uma sessão (altera status para CONECTADO)"
+					},
+					"response": []
+				},
+				{
+					"name": "Finalizar Sessão",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 or 404\", function () {",
+									"    pm.expect([200, 404]).to.include(pm.response.code);",
+									"});",
+									"pm.test(\"Session status is FINALIZADO\", function () {",
+									"    if (pm.response.code === 200) {",
+									"        var jsonData = pm.response.json();",
+									"        pm.expect(jsonData.status).to.eql('FINALIZADO');",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/sessions/:id/finish",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["sessions", ":id", "finish"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Finaliza uma sessão (altera status para FINALIZADO)"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Feedbacks",
+			"item": [
+				{
+					"name": "Criar Feedback",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Rating is between 1 and 5\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.rating).to.be.at.least(1);",
+									"    pm.expect(jsonData.rating).to.be.at.most(5);",
+									"});",
+									"pm.test(\"Response has HATEOAS links\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('_links');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"session\": {\n        \"id\": 1\n    },\n    \"rating\": 5,\n    \"comentario\": \"Excelente atendimento!\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/feedbacks",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["feedbacks"]
+						},
+						"description": "Cria um novo feedback para uma sessão"
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Todos os Feedbacks",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Response has HATEOAS collection\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('_embedded');",
+									"    pm.expect(jsonData).to.have.property('_links');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/feedbacks",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["feedbacks"]
+						},
+						"description": "Lista todos os feedbacks"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080"
+		}
+	]
+}
+

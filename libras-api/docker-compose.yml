@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: librasja-backend
+    restart: always
+    ports:
+      - "8080:8080"
+    user: "1000:1000"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+    networks:
+      - libras-network
+
+networks:
+  libras-network:
+    driver: bridge

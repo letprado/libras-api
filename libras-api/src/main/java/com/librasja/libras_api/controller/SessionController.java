@@ -10,14 +10,19 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/sessions")
 @RequiredArgsConstructor
-@Tag(name = "Sessões", description = "Controla as sessões de interpretação em Libras. Aqui você pode criar, listar, buscar, iniciar e finalizar sessões. Feito para facilitar o agendamento e acompanhamento das interpretações.")
+@Tag(name = "Sessões", description = "Controla as sessões de interpretação em Libras. Aqui você pode criar, listar, buscar, iniciar e finalizar sessões.")
 @SecurityRequirement(name = "Bearer Authentication")
 public class SessionController {
 
@@ -25,14 +30,14 @@ public class SessionController {
 
     @PostMapping
     @PreAuthorize("isAuthenticated()")
-    @Operation(summary = "Criar sessão", description = "Cria uma nova sessão de interpretação em Libras. Informe o solicitante e o intérprete. O status inicial é PENDENTE.")
+    @Operation(summary = "Criar sessão", description = "Cria uma nova sessão de interpretação em Libras.")
     public ResponseEntity<Session> createSession(@Valid @RequestBody Session session) {
         return ResponseEntity.status(HttpStatus.CREATED).body(sessionService.createSession(session));
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
-    @Operation(summary = "Buscar sessão por ID", description = "Busca uma sessão específica pelo ID. Mostra todos os detalhes da sessão.")
+    @Operation(summary = "Buscar sessão por ID", description = "Busca uma sessão específica pelo ID.")
     public ResponseEntity<Session> getSession(@PathVariable Long id) {
         return sessionService.getSession(id)
                 .map(ResponseEntity::ok)
@@ -48,7 +53,7 @@ public class SessionController {
 
     @PostMapping("/{id}/start")
     @PreAuthorize("isAuthenticated()")
-    @Operation(summary = "Iniciar sessão", description = "Inicia uma sessão de interpretação. Só o intérprete pode iniciar. O status muda para CONECTADO.")
+    @Operation(summary = "Iniciar sessão", description = "Inicia uma sessão e muda o status para CONECTADO.")
     public ResponseEntity<Session> startSession(@PathVariable Long id) {
         return sessionService.startSession(id)
                 .map(ResponseEntity::ok)
@@ -57,7 +62,7 @@ public class SessionController {
 
     @PostMapping("/{id}/finish")
     @PreAuthorize("isAuthenticated()")
-    @Operation(summary = "Finalizar sessão", description = "Finaliza uma sessão de interpretação. Só o intérprete pode finalizar. O status muda para FINALIZADO.")
+    @Operation(summary = "Finalizar sessão", description = "Finaliza uma sessão e muda o status para FINALIZADO.")
     public ResponseEntity<Session> finishSession(@PathVariable Long id) {
         return sessionService.finishSession(id)
                 .map(ResponseEntity::ok)
