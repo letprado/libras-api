@@ -3,13 +3,13 @@
 ## Integrantes do Grupo
 
 **[Letícia Sousa Prado]** - RM 559258  
-**Responsabilidade:** Java e banco de dados - Implementação da API, HATEOAS, JPA/Hibernate, documentação
+**Responsabilidade:** Java e banco de dados.
 
 **[Jennyfer Lee]** - RM 561020  
-**Responsabilidade:** .NET e IoT - Revisão e testes de integração
+**Responsabilidade:** .NET e IoT.
 
 **[Ivanildo Alfredo]** - RM 560049  
-**Responsabilidade:** Mobile, QA e DevOps - Validação dos testes e DevOps
+**Responsabilidade:** Mobile, QA e DevOps.
 
 ---
 
