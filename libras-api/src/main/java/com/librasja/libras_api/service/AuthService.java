@@ -50,7 +50,7 @@ public class AuthService {
                     .email(registrationDto.getEmail())
                     .password(passwordEncoder.encode(registrationDto.getPassword()))
                     .role(Role.valueOf(registrationDto.getRole().toUpperCase()))
-                    .active(1)  // 1 = true, 0 = false (Oracle NUMBER(1,0))
+                    .active(1)
                     .build();
 
             log.info("Salvando user no banco...");

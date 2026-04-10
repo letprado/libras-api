@@ -25,7 +25,7 @@ public class SessionIntegrationController {
     private final SessionIntegrationService sessionIntegrationService;
 
     @GetMapping("/{id}")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyRole('REQUESTER', 'INTERPRETER')")
     @Operation(summary = "Obter sessão via Feign", description = "Chamada síncrona para obter sessão através do Feign client")
     public ResponseEntity<SessionResponseDto> getSessionViaFeign(@PathVariable Long id) {
         SessionResponseDto sessionDto = sessionIntegrationService.getSessionVifeign(id);
@@ -33,7 +33,7 @@ public class SessionIntegrationController {
     }
 
     @GetMapping
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyRole('REQUESTER', 'INTERPRETER')")
     @Operation(summary = "Listar todas as sessões via Feign", description = "Chamada síncrona para listar sessões através do Feign client")
     public ResponseEntity<List<SessionResponseDto>> getAllSessionsViaFeign() {
         List<SessionResponseDto> sessions = sessionIntegrationService.getAllSessionsViaFeign();

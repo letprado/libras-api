@@ -33,32 +33,26 @@ public class ReportService {
     public ReportResponseDto generateInterpretationReport(ReportRequestDto requestDto) {
         log.info("Iniciando geração de relatório para intérprete: {}", requestDto.getInterpreterId());
 
-        // Etapa 1: Validar dados de entrada
         validateReportRequest(requestDto);
 
-        // Etapa 2: Buscar usuário intérprete
         User interpreter = userRepository.findById(requestDto.getInterpreterId())
                 .orElseThrow(() -> new IllegalArgumentException("Intérprete não encontrado"));
 
-        // Etapa 3: Validar se é realmente um intérprete
         if (!interpreter.getRole().toString().equals("INTERPRETER")) {
             throw new IllegalArgumentException("Usuário não é um intérprete");
         }
 
-        // Etapa 4: Consultar sessões do período
         List<Session> sessions = findSessionsInPeriod(
                 interpreter.getId(),
                 requestDto.getPeriodStart(),
                 requestDto.getPeriodEnd()
         );
 
-        // Etapa 5: Calcular estatísticas
         int totalSessions = sessions.size();
         List<Feedback> feedbacks = collectFeedbacksFromSessions(sessions);
         int totalFeedbacks = feedbacks.size();
         double averageRating = calculateAverageRating(feedbacks);
 
-        // Etapa 6: Verificar se já existe relatório para este período
         Optional<InterpretationReport> existingReport = reportRepository
                 .findByInterpreterAndPeriodStartAndPeriodEnd(
                         interpreter,
@@ -85,12 +79,10 @@ public class ReportService {
                     .build();
         }
 
-        // Etapa 7: Salvar relatório
         InterpretationReport savedReport = reportRepository.save(report);
         log.info("Relatório gerado com sucesso: reportId={}, totalSessions={}, averageRating={}",
                 savedReport.getId(), totalSessions, averageRating);
 
-        // Retornar resposta
         return mapToResponseDto(savedReport);
     }
 

@@ -25,7 +25,7 @@ public class SchedulingController {
     private final SchedulingService schedulingService;
 
     @PostMapping("/schedule")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('REQUESTER')")
     @Operation(summary = "Agendar nova sessão", description = "Permite que REQUESTER agende uma sessão com um INTERPRETER")
     public ResponseEntity<ScheduleSessionResponseDto> scheduleSession(@Valid @RequestBody ScheduleSessionRequestDto requestDto) {
         ScheduleSessionResponseDto response = schedulingService.scheduleSession(requestDto);
@@ -33,7 +33,7 @@ public class SchedulingController {
     }
 
     @PostMapping("/{scheduleId}/confirm")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('INTERPRETER')")
     @Operation(summary = "Confirmar agendamento", description = "Permite que INTERPRETER confirme um agendamento")
     public ResponseEntity<ScheduleSessionResponseDto> confirmSchedule(@PathVariable Long scheduleId) {
         ScheduleSessionResponseDto response = schedulingService.confirmSchedule(scheduleId);
@@ -41,7 +41,7 @@ public class SchedulingController {
     }
 
     @DeleteMapping("/{scheduleId}/cancel")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyRole('REQUESTER', 'INTERPRETER')")
     @Operation(summary = "Cancelar agendamento", description = "Cancela um agendamento de sessão")
     public ResponseEntity<String> cancelSchedule(@PathVariable Long scheduleId) {
         schedulingService.cancelSchedule(scheduleId);
@@ -49,7 +49,7 @@ public class SchedulingController {
     }
 
     @GetMapping("/interpreter/{interpreterId}")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('INTERPRETER')")
     @Operation(summary = "Listar agendamentos do intérprete", description = "Retorna todos os agendamentos de um intérprete")
     public ResponseEntity<List<ScheduleSessionResponseDto>> getSchedulesByInterpreter(@PathVariable Long interpreterId) {
         List<ScheduleSessionResponseDto> schedules = schedulingService.getSchedulesByInterpreter(interpreterId);
@@ -57,7 +57,7 @@ public class SchedulingController {
     }
 
     @GetMapping("/requester/{requesterId}")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('REQUESTER')")
     @Operation(summary = "Listar agendamentos do solicitante", description = "Retorna todos os agendamentos de um solicitante")
     public ResponseEntity<List<ScheduleSessionResponseDto>> getSchedulesByRequester(@PathVariable Long requesterId) {
         List<ScheduleSessionResponseDto> schedules = schedulingService.getSchedulesByRequester(requesterId);

@@ -7,6 +7,7 @@ Este projeto foi desenvolvido para a sprint com o objetivo de organizar o proces
 A API permite:
 - cadastrar usuários com perfis diferentes;
 - autenticar com JWT;
+- proteger rotas com base no perfil do usuário;
 - criar e acompanhar sessões de interpretação;
 - registrar feedbacks sobre o atendimento;
 - agendar sessões futuras;
@@ -83,6 +84,11 @@ Depois do login, o token retornado deve ser enviado no header:
 
 `Authorization: Bearer {token}`
 
+Perfis usados no projeto:
+
+- `REQUESTER`: cria sessão, registra feedback e gerencia seus agendamentos.
+- `INTERPRETER`: inicia e finaliza sessões, confirma agendamentos e gera relatórios.
+
 ## Rotas da API
 
 ### 1. Autenticação
@@ -119,7 +125,7 @@ Exemplo de body:
 
 `POST /sessions`
 
-Cria uma sessão entre solicitante e intérprete.
+Cria uma sessão entre solicitante e intérprete. Acesso do perfil `REQUESTER`.
 
 ```json
 {
@@ -130,25 +136,25 @@ Cria uma sessão entre solicitante e intérprete.
 
 `GET /sessions`
 
-Lista todas as sessões cadastradas.
+Lista todas as sessões cadastradas. Acesso para `REQUESTER` e `INTERPRETER`.
 
 `GET /sessions/{id}`
 
-Busca uma sessão pelo id.
+Busca uma sessão pelo id. Acesso para `REQUESTER` e `INTERPRETER`.
 
 `POST /sessions/{id}/start`
 
-Marca a sessão como iniciada.
+Marca a sessão como iniciada. Acesso do perfil `INTERPRETER`.
 
 `POST /sessions/{id}/finish`
 
-Marca a sessão como finalizada.
+Marca a sessão como finalizada. Acesso do perfil `INTERPRETER`.
 
 ### 3. Feedbacks
 
 `POST /feedbacks`
 
-Registra uma avaliação da sessão.
+Registra uma avaliação da sessão. Acesso do perfil `REQUESTER`.
 
 ```json
 {
@@ -162,17 +168,17 @@ Registra uma avaliação da sessão.
 
 `GET /feedbacks`
 
-Lista todos os feedbacks.
+Lista todos os feedbacks. Acesso para `REQUESTER` e `INTERPRETER`.
 
 `GET /feedbacks/session/{sessionId}`
 
-Lista os feedbacks de uma sessão específica.
+Lista os feedbacks de uma sessão específica. Acesso para `REQUESTER` e `INTERPRETER`.
 
 ### 4. Agendamento
 
 `POST /scheduling/schedule`
 
-Cria um agendamento futuro.
+Cria um agendamento futuro. Acesso do perfil `REQUESTER`.
 
 ```json
 {
@@ -186,25 +192,25 @@ Cria um agendamento futuro.
 
 `POST /scheduling/{scheduleId}/confirm`
 
-Confirma o agendamento.
+Confirma o agendamento. Acesso do perfil `INTERPRETER`.
 
 `DELETE /scheduling/{scheduleId}/cancel`
 
-Cancela o agendamento.
+Cancela o agendamento. Acesso para `REQUESTER` e `INTERPRETER`.
 
 `GET /scheduling/interpreter/{interpreterId}`
 
-Lista os agendamentos do intérprete.
+Lista os agendamentos do intérprete. Acesso do perfil `INTERPRETER`.
 
 `GET /scheduling/requester/{requesterId}`
 
-Lista os agendamentos do solicitante.
+Lista os agendamentos do solicitante. Acesso do perfil `REQUESTER`.
 
 ### 5. Relatórios
 
 `POST /reports/generate`
 
-Gera um relatório por intérprete e período.
+Gera um relatório por intérprete e período. Acesso do perfil `INTERPRETER`.
 
 ```json
 {
@@ -216,21 +222,21 @@ Gera um relatório por intérprete e período.
 
 `GET /reports/{reportId}`
 
-Busca um relatório pelo id.
+Busca um relatório pelo id. Acesso do perfil `INTERPRETER`.
 
 `GET /reports/interpreter/{interpreterId}`
 
-Lista os relatórios de um intérprete.
+Lista os relatórios de um intérprete. Acesso do perfil `INTERPRETER`.
 
 ### 6. Integração com Feign
 
 `GET /api/sessions/external`
 
-Lista sessões pela camada de integração com Feign.
+Lista sessões pela camada de integração com Feign. Acesso para `REQUESTER` e `INTERPRETER`.
 
 `GET /api/sessions/external/{id}`
 
-Busca uma sessão específica pela integração com Feign.
+Busca uma sessão específica pela integração com Feign. Acesso para `REQUESTER` e `INTERPRETER`.
 
 ## Mensageria com RabbitMQ
 

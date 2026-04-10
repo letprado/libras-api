@@ -25,7 +25,7 @@ public class ReportController {
     private final ReportService reportService;
 
     @PostMapping("/generate")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('INTERPRETER')")
     @Operation(summary = "Gerar relatório de interpretação", description = "Gera um fluxo completo de relatório análisando sessões e feedbacks")
     public ResponseEntity<ReportResponseDto> generateReport(@Valid @RequestBody ReportRequestDto requestDto) {
         ReportResponseDto report = reportService.generateInterpretationReport(requestDto);
@@ -33,7 +33,7 @@ public class ReportController {
     }
 
     @GetMapping("/{reportId}")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('INTERPRETER')")
     @Operation(summary = "Obter relatório por ID", description = "Retorna os detalhes de um relatório específico")
     public ResponseEntity<ReportResponseDto> getReportById(@PathVariable Long reportId) {
         ReportResponseDto report = reportService.getReportById(reportId);
@@ -41,7 +41,7 @@ public class ReportController {
     }
 
     @GetMapping("/interpreter/{interpreterId}")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('INTERPRETER')")
     @Operation(summary = "Listar relatórios do intérprete", description = "Retorna todos os relatórios de um intérprete específico")
     public ResponseEntity<List<ReportResponseDto>> getReportsByInterpreter(@PathVariable Long interpreterId) {
         List<ReportResponseDto> reports = reportService.getReportsByInterpreter(interpreterId);

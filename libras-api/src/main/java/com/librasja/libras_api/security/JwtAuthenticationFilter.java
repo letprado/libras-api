@@ -27,7 +27,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        // NÃO aplicar filtro JWT em rotas públicas
         String path = request.getRequestURI();
         log.debug("JwtAuthenticationFilter - Path: {}", path);
         

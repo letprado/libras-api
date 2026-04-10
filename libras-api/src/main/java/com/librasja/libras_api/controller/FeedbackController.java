@@ -29,21 +29,21 @@ public class FeedbackController {
     private final FeedbackService feedbackService;
 
     @PostMapping
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('REQUESTER')")
     @Operation(summary = "Criar feedback", description = "Cria um feedback para uma sessão com nota e comentário.")
     public ResponseEntity<Feedback> createFeedback(@Valid @RequestBody Feedback feedback) {
         return ResponseEntity.status(HttpStatus.CREATED).body(feedbackService.createFeedback(feedback));
     }
 
     @GetMapping
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyRole('REQUESTER', 'INTERPRETER')")
     @Operation(summary = "Listar feedbacks", description = "Lista todos os feedbacks cadastrados no sistema.")
     public ResponseEntity<List<Feedback>> getAllFeedbacks() {
         return ResponseEntity.ok(feedbackService.getAllFeedbacks());
     }
 
     @GetMapping("/session/{sessionId}")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyRole('REQUESTER', 'INTERPRETER')")
     @Operation(summary = "Listar feedbacks por sessão", description = "Lista todos os feedbacks de uma sessão específica.")
     public ResponseEntity<List<Feedback>> getFeedbacksBySession(@PathVariable Long sessionId) {
         return ResponseEntity.ok(feedbackService.getFeedbacksBySession(sessionId));

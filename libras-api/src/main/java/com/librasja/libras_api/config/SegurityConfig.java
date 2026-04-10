@@ -58,20 +58,13 @@ public class SegurityConfig {
                 .cors(cors -> cors.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                    // Permitir OPTIONS em tudo (preflight)
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                    // Test endpoints
-                    .requestMatchers(HttpMethod.GET, "/test/**").permitAll()
-                    .requestMatchers(HttpMethod.POST, "/test/**").permitAll()
-                    // Public endpoints
                     .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
                     .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
-                    // Swagger
                     .requestMatchers("/swagger-ui/**").permitAll()
                     .requestMatchers("/v3/api-docs/**").permitAll()
                     .requestMatchers("/swagger-ui.html").permitAll()
                     .requestMatchers("/webjars/**").permitAll()
-                    // Rest needs auth
                     .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())

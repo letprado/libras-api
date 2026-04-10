@@ -29,14 +29,14 @@ public class SessionController {
     private final SessionService sessionService;
 
     @PostMapping
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('REQUESTER')")
     @Operation(summary = "Criar sessão", description = "Cria uma nova sessão de interpretação em Libras.")
     public ResponseEntity<Session> createSession(@Valid @RequestBody Session session) {
         return ResponseEntity.status(HttpStatus.CREATED).body(sessionService.createSession(session));
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyRole('REQUESTER', 'INTERPRETER')")
     @Operation(summary = "Buscar sessão por ID", description = "Busca uma sessão específica pelo ID.")
     public ResponseEntity<Session> getSession(@PathVariable Long id) {
         return sessionService.getSession(id)
@@ -45,14 +45,14 @@ public class SessionController {
     }
 
     @GetMapping
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyRole('REQUESTER', 'INTERPRETER')")
     @Operation(summary = "Listar sessões", description = "Lista todas as sessões cadastradas no sistema.")
     public ResponseEntity<List<Session>> getAllSessions() {
         return ResponseEntity.ok(sessionService.getAllSessions());
     }
 
     @PostMapping("/{id}/start")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('INTERPRETER')")
     @Operation(summary = "Iniciar sessão", description = "Inicia uma sessão e muda o status para CONECTADO.")
     public ResponseEntity<Session> startSession(@PathVariable Long id) {
         return sessionService.startSession(id)
@@ -61,7 +61,7 @@ public class SessionController {
     }
 
     @PostMapping("/{id}/finish")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('INTERPRETER')")
     @Operation(summary = "Finalizar sessão", description = "Finaliza uma sessão e muda o status para FINALIZADO.")
     public ResponseEntity<Session> finishSession(@PathVariable Long id) {
         return sessionService.finishSession(id)

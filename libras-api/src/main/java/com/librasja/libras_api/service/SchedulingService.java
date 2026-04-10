@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,17 +27,14 @@ public class SchedulingService {
         log.info("Iniciando agendamento de sessão para requester {} e interpreter {}",
                 requestDto.getRequesterId(), requestDto.getInterpreterId());
 
-        // Etapa 1: Validar dados de entrada
         validateScheduleRequest(requestDto);
 
-        // Etapa 2: Buscar usuários
         User requester = userRepository.findById(requestDto.getRequesterId())
                 .orElseThrow(() -> new IllegalArgumentException("Solicitante não encontrado"));
 
         User interpreter = userRepository.findById(requestDto.getInterpreterId())
                 .orElseThrow(() -> new IllegalArgumentException("Intérprete não encontrado"));
 
-        // Validar se são os roles corretos
         if (!requester.getRole().toString().equals("REQUESTER")) {
             throw new IllegalArgumentException("Usuário não é um solicitante");
         }
@@ -47,15 +43,12 @@ public class SchedulingService {
             throw new IllegalArgumentException("Usuário não é um intérprete");
         }
 
-        // Etapa 3: Validar disponibilidade do intérprete
         checkInterpreterAvailability(interpreter, requestDto.getScheduledFor(), requestDto.getDurationMinutes());
 
-        // Etapa 4: Validar se a data é futura
         if (!requestDto.getScheduledFor().isAfter(LocalDateTime.now())) {
             throw new IllegalArgumentException("Data agendada deve ser no futuro");
         }
 
-        // Etapa 5: Criar agendamento
         SessionSchedule schedule = SessionSchedule.builder()
                 .requester(requester)
                 .interpreter(interpreter)
@@ -68,10 +61,6 @@ public class SchedulingService {
         SessionSchedule savedSchedule = scheduleRepository.save(schedule);
         log.info("Agendamento criado com sucesso: scheduleId={}, scheduledFor={}", savedSchedule.getId(), savedSchedule.getScheduledFor());
 
-        // Etapa 6: Publicar evento (poderia ser assíncrono com RabbitMQ)
-        // publishScheduleCreatedEvent(savedSchedule);
-
-        // Etapa 7: Retornar resposta
         return mapToResponseDto(savedSchedule);
     }
 
@@ -143,7 +132,7 @@ public class SchedulingService {
             throw new IllegalArgumentException("Duração deve ser um valor positivo");
         }
 
-        if (requestDto.getDurationMinutes() > 480) { // 8 horas
+        if (requestDto.getDurationMinutes() > 480) {
             throw new IllegalArgumentException("Duração máxima é 480 minutos (8 horas)");
         }
     }
