@@ -1,0 +1,337 @@
+ROTEIRO COMPLETO DO VIDEO - LIBRAS API
+
+1. ABERTURA
+
+Oi, meu nome é [SEU NOME] e eu vou apresentar a Libras API, projeto desenvolvido para a disciplina Java Advanced.
+
+Antes de mostrar a API, eu quero explicar o problema que a nossa solução resolve.
+
+O público-alvo do projeto são:
+- pessoas surdas que precisam de serviços de interpretação;
+- intérpretes de Libras profissionais.
+
+A partir disso, a sprint pedia uma solução que ajudasse no controle desse processo. Os principais problemas identificados foram:
+- falta de rastreabilidade das sessões;
+- ausência de feedback sobre a qualidade do atendimento;
+- gestão manual das sessões;
+- falta de métricas para análise.
+
+O que eu estou entregando para resolver isso é:
+- cadastro e autenticação de usuários com perfis diferentes;
+- criação e acompanhamento de sessões de interpretação;
+- agendamento de sessões futuras;
+- registro de feedbacks;
+- geração de relatórios com métricas;
+- mensageria com RabbitMQ;
+- integração entre serviços com Feign Client;
+- documentação completa no Swagger.
+
+Então, resumindo de forma bem direta:
+- a sprint pediu controle de sessões: eu entreguei criação, consulta, início e finalização;
+- a sprint pediu avaliação do serviço: eu entreguei feedback com nota e comentário;
+- a sprint pediu organização do processo: eu entreguei agendamento;
+- a sprint pediu métricas: eu entreguei relatórios;
+- a sprint pediu integração e arquitetura mais completa: eu entreguei RabbitMQ, Feign e autenticação JWT.
+
+2. TECNOLOGIAS
+
+Nesse projeto eu utilizei:
+- Java 17;
+- Spring Boot;
+- Spring Security com JWT;
+- Spring Data JPA;
+- Oracle Database;
+- RabbitMQ;
+- OpenFeign;
+- Swagger / OpenAPI.
+
+3. O QUE EU VOU MOSTRAR NO VIDEO
+
+Agora eu vou mostrar a API no Swagger seguindo a ordem correta do uso real do sistema.
+Primeiro eu cadastro os usuários.
+Depois eu faço login.
+Em seguida eu demonstro sessões, agendamentos, feedbacks, relatórios e a integração via Feign.
+
+4. SWAGGER
+
+Abrir o Swagger e falar:
+
+Aqui está a documentação da API. Eu deixei tudo em português, com explicação em cada rota, para facilitar o entendimento do projeto.
+
+5. FLUXO COMPLETO DE DEMONSTRACAO
+
+5.1 AUTENTICACAO E CADASTRO
+
+ROTA 1 - Registrar solicitante
+Metodo: POST
+Endpoint: /auth/register
+Body:
+{
+  "username": "solicitante1",
+  "email": "solicitante1@email.com",
+  "password": "123456",
+  "role": "REQUESTER"
+}
+O que explicar:
+Aqui eu cadastro o usuário que vai solicitar o serviço de interpretação.
+Esse usuário representa a pessoa que precisa agendar ou abrir uma sessão.
+
+ROTA 2 - Registrar interprete
+Metodo: POST
+Endpoint: /auth/register
+Body:
+{
+  "username": "interprete1",
+  "email": "interprete1@email.com",
+  "password": "123456",
+  "role": "INTERPRETER"
+}
+O que explicar:
+Aqui eu cadastro o intérprete, que é o profissional que vai atender as sessões.
+
+ROTA 3 - Login do solicitante
+Metodo: POST
+Endpoint: /auth/login
+Body:
+{
+  "username": "solicitante1",
+  "password": "123456"
+}
+O que explicar:
+Aqui eu faço login com o solicitante e recebo o token JWT.
+Esse token é usado para acessar as rotas protegidas.
+
+ROTA 4 - Login do interprete
+Metodo: POST
+Endpoint: /auth/login
+Body:
+{
+  "username": "interprete1",
+  "password": "123456"
+}
+O que explicar:
+Aqui eu também posso fazer login como intérprete.
+Isso é importante porque algumas rotas só podem ser usadas por esse perfil.
+
+Observacao para falar no video:
+Depois do login, eu copio o token e uso o Authorize do Swagger para testar as rotas protegidas.
+
+5.2 SESSOES DE INTERPRETACAO
+
+ROTA 5 - Criar sessao
+Metodo: POST
+Endpoint: /sessions
+Body:
+{
+  "requesterId": 1,
+  "interpreterId": 2,
+  "status": "PENDENTE"
+}
+O que explicar:
+Aqui eu crio uma sessão ligando o solicitante ao intérprete.
+Essa rota resolve a parte principal da sprint, que é registrar e controlar o atendimento.
+Mesmo enviando status, a lógica da aplicação já trabalha a sessão começando como pendente.
+
+ROTA 6 - Listar sessoes
+Metodo: GET
+Endpoint: /sessions
+Body: sem body
+O que explicar:
+Aqui eu consulto todas as sessões registradas.
+Isso resolve o problema de rastreabilidade, porque agora eu consigo acompanhar o histórico das sessões.
+
+ROTA 7 - Buscar sessao por ID
+Metodo: GET
+Endpoint: /sessions/{id}
+Exemplo: /sessions/1
+Body: sem body
+O que explicar:
+Aqui eu busco uma sessão específica para consultar seus dados.
+
+ROTA 8 - Iniciar sessao
+Metodo: POST
+Endpoint: /sessions/{id}/start
+Exemplo: /sessions/1/start
+Body: sem body
+O que explicar:
+Aqui o intérprete inicia a sessão.
+Nesse momento o status muda para CONECTADO.
+Essa etapa mostra a evolução do atendimento dentro do sistema.
+
+ROTA 9 - Finalizar sessao
+Metodo: POST
+Endpoint: /sessions/{id}/finish
+Exemplo: /sessions/1/finish
+Body: sem body
+O que explicar:
+Aqui o intérprete finaliza a sessão.
+O status passa para FINALIZADO.
+Essa informação depois pode ser usada em feedback e relatório.
+
+5.3 FEEDBACKS
+
+ROTA 10 - Criar feedback
+Metodo: POST
+Endpoint: /feedbacks
+Body:
+{
+  "session": {
+    "id": 1
+  },
+  "rating": 5,
+  "comentario": "Atendimento muito bom, comunicação clara e pontual."
+}
+O que explicar:
+Aqui eu registro a avaliação da sessão.
+Essa rota resolve o problema da ausência de feedback, porque agora o sistema passa a armazenar nota e comentário sobre o atendimento.
+
+ROTA 11 - Listar todos os feedbacks
+Metodo: GET
+Endpoint: /feedbacks
+Body: sem body
+O que explicar:
+Aqui eu visualizo todos os feedbacks registrados na aplicação.
+
+ROTA 12 - Listar feedbacks por sessao
+Metodo: GET
+Endpoint: /feedbacks/session/{sessionId}
+Exemplo: /feedbacks/session/1
+Body: sem body
+O que explicar:
+Aqui eu vejo apenas os feedbacks relacionados a uma sessão específica.
+
+5.4 AGENDAMENTO DE SESSOES
+
+ROTA 13 - Agendar nova sessao
+Metodo: POST
+Endpoint: /scheduling/schedule
+Body:
+{
+  "requesterId": 1,
+  "interpreterId": 2,
+  "scheduledFor": "2026-12-20T14:00:00",
+  "durationMinutes": 60,
+  "description": "Sessão agendada para atendimento em consulta médica."
+}
+O que explicar:
+Aqui eu resolvo a parte da gestão manual.
+Em vez de organizar isso fora do sistema, eu consigo registrar um agendamento futuro com data, duração e descrição.
+
+ROTA 14 - Confirmar agendamento
+Metodo: POST
+Endpoint: /scheduling/{scheduleId}/confirm
+Exemplo: /scheduling/1/confirm
+Body: sem body
+O que explicar:
+Aqui o intérprete confirma que vai atender esse agendamento.
+Isso ajuda no controle do processo antes da sessão acontecer.
+
+ROTA 15 - Cancelar agendamento
+Metodo: DELETE
+Endpoint: /scheduling/{scheduleId}/cancel
+Exemplo: /scheduling/1/cancel
+Body: sem body
+O que explicar:
+Aqui eu cancelo um agendamento.
+Essa rota é importante para manter a agenda organizada e atualizada.
+
+ROTA 16 - Listar agendamentos do interprete
+Metodo: GET
+Endpoint: /scheduling/interpreter/{interpreterId}
+Exemplo: /scheduling/interpreter/2
+Body: sem body
+O que explicar:
+Aqui eu consigo ver todos os agendamentos de um intérprete específico.
+
+ROTA 17 - Listar agendamentos do solicitante
+Metodo: GET
+Endpoint: /scheduling/requester/{requesterId}
+Exemplo: /scheduling/requester/1
+Body: sem body
+O que explicar:
+Aqui eu vejo todos os agendamentos feitos por um solicitante.
+
+5.5 RELATORIOS E METRICAS
+
+ROTA 18 - Gerar relatorio
+Metodo: POST
+Endpoint: /reports/generate
+Body:
+{
+  "interpreterId": 2,
+  "periodStart": "2026-01-01T00:00:00",
+  "periodEnd": "2026-12-31T23:59:59"
+}
+O que explicar:
+Aqui eu gero um relatório com base em um período.
+Essa rota resolve o problema da falta de métricas, porque ela consolida dados das sessões e dos feedbacks para análise da qualidade do serviço.
+
+ROTA 19 - Buscar relatorio por ID
+Metodo: GET
+Endpoint: /reports/{reportId}
+Exemplo: /reports/1
+Body: sem body
+O que explicar:
+Aqui eu consulto um relatório específico já gerado.
+
+ROTA 20 - Listar relatorios por interprete
+Metodo: GET
+Endpoint: /reports/interpreter/{interpreterId}
+Exemplo: /reports/interpreter/2
+Body: sem body
+O que explicar:
+Aqui eu vejo todos os relatórios relacionados a um intérprete.
+
+5.6 INTEGRACAO COM FEIGN
+
+ROTA 21 - Buscar sessao via Feign
+Metodo: GET
+Endpoint: /api/sessions/external/{id}
+Exemplo: /api/sessions/external/1
+Body: sem body
+O que explicar:
+Aqui eu demonstro a integração entre serviços usando Feign Client.
+Essa rota faz uma chamada para buscar uma sessão por meio de outra camada de integração.
+Ela mostra que a aplicação já está preparada para uma arquitetura mais integrada.
+
+ROTA 22 - Listar sessoes via Feign
+Metodo: GET
+Endpoint: /api/sessions/external
+Body: sem body
+O que explicar:
+Aqui eu listo as sessões também pela integração Feign.
+Isso reforça que o projeto não está só no CRUD básico, mas também inclui comunicação entre serviços.
+
+6. SEGURANCA
+
+Fala sugerida:
+Além das funcionalidades principais, a API também tem autenticação com JWT.
+As rotas públicas são apenas login e cadastro.
+As demais exigem token, e algumas ainda exigem perfil específico, como REQUESTER ou INTERPRETER.
+
+7. RABBITMQ
+
+Fala sugerida:
+Outro ponto importante da entrega é a mensageria com RabbitMQ.
+Quando uma sessão é criada ou finalizada, e quando um feedback é criado, a aplicação publica eventos.
+Isso é importante porque mostra uma arquitetura mais robusta, preparada para integração e processamento assíncrono.
+
+8. FECHAMENTO RELACIONANDO COM A SPRINT
+
+Fala sugerida:
+Então, comparando diretamente com o que foi pedido na sprint, a entrega ficou assim:
+- cadastro de usuários: entregue;
+- autenticação e segurança: entregue;
+- controle de sessões: entregue;
+- feedback e avaliação do serviço: entregue;
+- agendamento: entregue;
+- relatórios e métricas: entregue;
+- integração com mensageria: entregue;
+- integração entre serviços com Feign: entregue;
+- documentação com Swagger: entregue.
+
+Com isso, a solução atende o problema proposto e organiza de forma muito melhor o processo de interpretação em Libras, trazendo registro, avaliação, controle e possibilidade de análise.
+
+9. ENCERRAMENTO
+
+Obrigada pela atenção. Esse foi o projeto Libras API.

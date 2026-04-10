@@ -75,237 +75,113 @@ https://youtu.be/ZGvI0K_um1k / https://www.youtube.com/watch?v=ZGvI0K_um1k
 
 No vídeo apresentamos:
 - Proposta tecnológica e contexto social
-- Público-alvo e problemas resolvidos
 
----
+# Libras API
 
-## Documentação da API (Endpoints)
+Este projeto é uma API para gerenciar sessões de interpretação em Libras (Língua Brasileira de Sinais) e os feedbacks dessas sessões. O objetivo é facilitar o agendamento, acompanhamento e avaliação do serviço de interpretação.
 
-### Sessions
+## Como rodar o projeto
 
-#### `POST /sessions`
-Cria uma nova sessão de interpretação
-```json
-{
-  "requesterId": 1,
-  "interpreterId": 2,
-  "status": "PENDENTE"
-}
-```
+**Pré-requisitos:**
+- Java 17 ou superior
+- Maven 3.6+ (ou usar o mvnw)
+- Oracle Database (ou H2 para testes)
 
-#### `GET /sessions`
-Lista todas as sessões
+**Passos:**
+1. Clone o repositório:
+   ```
+   git clone https://github.com/letprado/libras-api.git
+   cd libras-api/libras-api
+   ```
+2. Configure o banco de dados em `src/main/resources/application.properties`:
+   ```
+   spring.datasource.url=jdbc:oracle:thin:@//SEU_HOST:1521/orcl
+   spring.datasource.username=SEU_USUARIO
+   spring.datasource.password=SUA_SENHA
+   ```
+3. Compile e rode:
+   ```
+   mvn clean install
+   mvn spring-boot:run
+   ```
+4. Acesse a API em: http://localhost:8080
 
-#### `GET /sessions/{id}`
-Busca uma sessão específica
+## O que a API faz
 
-#### `POST /sessions/{id}/start`
-Inicia uma sessão (muda status para CONECTADO)
+- Permite criar, listar, buscar, iniciar e finalizar sessões de interpretação.
+- Permite criar e listar feedbacks para as sessões.
+- Possui autenticação com JWT (login e registro).
+- Usa mensageria (RabbitMQ) para eventos de sessão e feedback.
+- Tem integração com Feign Client para comunicação entre serviços.
 
-#### `POST /sessions/{id}/finish`
-Finaliza uma sessão (muda status para FINALIZADO)
+## Endpoints principais
 
----
+### Sessões
+
+- `POST /sessions` — Cria uma nova sessão
+  - Exemplo de body:
+    ```json
+    {
+      "requesterId": 1,
+      "interpreterId": 2,
+      "status": "PENDENTE"
+    }
+    ```
+- `GET /sessions` — Lista todas as sessões
+- `GET /sessions/{id}` — Busca uma sessão específica
+- `POST /sessions/{id}/start` — Inicia uma sessão
+- `POST /sessions/{id}/finish` — Finaliza uma sessão
 
 ### Feedbacks
 
-#### `POST /feedbacks`
-Cria um novo feedback para uma sessão
-```json
-{
-  "session": {
-    "id": 1
-  },
-  "rating": 5,
-  "comentario": "Excelente atendimento!"
-}
-```
+- `POST /feedbacks` — Cria um feedback para uma sessão
+  - Exemplo de body:
+    ```json
+    {
+      "session": { "id": 1 },
+      "rating": 5,
+      "comentario": "Muito bom!"
+    }
+    ```
+- `GET /feedbacks` — Lista todos os feedbacks
 
-#### `GET /feedbacks`
-Lista todos os feedbacks
+## Como funciona cada parte
 
----
+### Entidades principais
 
-## Diagramas
+- **User**: representa o usuário do sistema (solicitante ou intérprete). Tem login, senha, e um campo "role" para diferenciar o tipo.
+- **Session**: representa uma sessão de interpretação. Tem quem pediu, quem vai interpretar, status (PENDENTE, CONECTADO, FINALIZADO), horários e lista de feedbacks.
+- **Feedback**: avaliação de uma sessão, com nota (1 a 5) e comentário.
 
-Estão na documentação enviada, no readme não consegui colocar nenhuma imagem.
+### Serviços
 
----
+- **SessionService**: regras para criar, buscar, iniciar e finalizar sessões.
+- **FeedbackService**: regras para criar e listar feedbacks.
+- **ReportService**: gera relatórios de sessões e feedbacks (usado para estatísticas).
+- **SchedulingService**: agenda sessões futuras.
 
-## Cronograma de Desenvolvimento
+### Segurança
 
-### Sprint 1 (12/10/2025) - CONCLUÍDO
-**Responsável:** Letícia Sousa Prado
+- Usa Spring Security com JWT.
+- Para acessar os endpoints, é preciso estar autenticado (exceto login e registro).
+- Roles: "REQUESTER" (quem pede a sessão) e "INTERPRETER" (quem interpreta).
 
-**Atividades realizadas:**
-- Implementação da API REST em Java com Spring Boot
-- Criação das entidades JPA: Session e Feedback
-- Mapeamento correto das relações entre entidades (@ManyToOne, @JoinColumn)
-- Criação de endpoints REST para inserir sessões e feedbacks
-- Testes iniciais dos endpoints via Postman
-- Garantia de persistência e recuperação de dados no banco
+### Mensageria (RabbitMQ)
 
-**Status:** Funcionalidades básicas implementadas, API integrada com o banco de dados, endpoints testados e funcionando
+- Quando uma sessão é criada ou finalizada, ou um feedback é criado, um evento é enviado para o RabbitMQ.
+- O EventPublisher envia os eventos.
+- O EventConsumer recebe e processa os eventos (pode ser usado para notificações, estatísticas, etc).
 
-### Sprint 2 (Próxima) 
+### Feign Client
+
+- O SessionServiceClient é um Feign Client para buscar sessões em outro serviço HTTP, facilitando a comunicação entre microsserviços.
+
+## Como explicar se perguntarem
+
+- O projeto foi feito para facilitar o controle de sessões de interpretação em Libras.
+- Tem autenticação, controle de acesso, e permite avaliar o serviço.
+- Usa eventos para integrar com outros sistemas (RabbitMQ).
+- O código está simples, sem comentários, para facilitar a leitura.
+- O README explica o que faz cada parte, para ajudar a entender.
 
 
-**Atividades planejadas:**
-- Implementar validações mais robustas nos endpoints (rating entre 1 e 5, sessões válidas)
-- Melhorar tratamento de erros e respostas da API
-- Integração completa com app móvel para CRUD de sessões e feedbacks
-
----
-
-## Arquitetura e Classes de Domínio
-
-### CLASSE SESSION - ENTIDADE PRINCIPAL
-
-A classe Session representa uma sessão de interpretação em Libras e demonstra o mapeamento objeto-relacional com JPA/Hibernate:
-
-```java
-package com.librasja.libras_api.entity;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
-@Entity
-@Table(name = "sessions")
-public class Session {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(name = "requester_id", nullable = false)
-    private Long requesterId;
-
-    @Column(name = "interpreter_id", nullable = false)
-    private Long interpreterId;
-
-    @Column(nullable = false)
-    private String status; // PENDENTE, CONECTADO, FINALIZADO, CANCELADO
-
-    @Column(name = "started_at")
-    private LocalDateTime startedAt;
-
-    @Column(name = "ended_at")
-    private LocalDateTime endedAt;
-
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
-
-    @OneToMany(mappedBy = "session", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<Feedback> feedbacks = new ArrayList<>();
-
-    // Getters e Setters...
-}
-```
-
-**PRINCIPAIS ANOTAÇÕES JPA IMPLEMENTADAS:**
-- `@Entity`: Marca a classe como entidade JPA que será persistida no banco
-- `@Table(name = "sessions")`: Define o nome da tabela no banco Oracle
-- `@Id + @GeneratedValue(strategy = GenerationType.IDENTITY)`: Configura chave primária com auto-incremento
-- `@Column`: Define propriedades das colunas (nullable, name, etc.)
-- `@OneToMany(mappedBy = "session", cascade = CascadeType.ALL)`: Estabelece relacionamento um-para-muitos com Feedback
-- `@JsonIgnore`: Evita serialização recursiva infinita no JSON
-
-### CLASSE FEEDBACK - ENTIDADE COM RELACIONAMENTO
-
-A classe Feedback representa uma avaliação de sessão e demonstra relacionamentos JPA e validações Bean Validation:
-
-```java
-package com.librasja.libras_api.entity;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import java.time.LocalDateTime;
-
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@Entity
-@Table(name = "FEEDBACKS")
-public class Feedback {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "session_id", nullable = false)
-    private Session session;
-
-    @Min(1)
-    @Max(5)
-    @Column(name = "rating", nullable = false)
-    private Integer rating;
-
-    @Column(name = "comentario")
-    private String comentario;
-
-    @Column(name = "created_at", nullable = false, insertable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    // Getters e Setters...
-}
-```
-
-**PRINCIPAIS ANOTAÇÕES JPA IMPLEMENTADAS:**
-- `@ManyToOne(fetch = FetchType.EAGER)`: Define relacionamento muitos-para-um com Session
-- `@JoinColumn(name = "session_id", nullable = false)`: Cria chave estrangeira obrigatória
-- `@Min(1) @Max(5)`: Validação Bean Validation que garante rating entre 1 e 5 estrelas
-- `@Column(insertable = false, updatable = false)`: Campo created_at gerenciado automaticamente pelo banco
-
----
-
-## Explicação do Relacionamento e Constraints
-
-### RELACIONAMENTO PRINCIPAL: Session ↔ Feedback
-
-**Tipo:** Um-para-Muitos (1:N)
-- Uma sessão pode ter vários feedbacks
-- Um feedback pertence a apenas uma sessão
-
-**Como funciona no código:**
-- Na classe Session: `@OneToMany(mappedBy = "session")`
-- Na classe Feedback: `@ManyToOne` com `@JoinColumn(name = "session_id")`
-
-### CONSTRAINTS (REGRAS) IMPLEMENTADAS
-
-1. **Chaves Primárias (PK):**
-   - Session.id = chave primária (identificador único)
-   - Feedback.id = chave primária (identificador único)
-
-2. **Chave Estrangeira (FK):**
-   - Feedback.session_id → referencia Session.id
-   - Constraint: nullable = false (feedback DEVE ter uma sessão)
-
-3. **Campos Obrigatórios (NOT NULL):**
-   - Session.requesterId = obrigatório (deve ter solicitante)
-   - Session.interpreterId = obrigatório (deve ter intérprete)
-   - Session.status = obrigatório (deve ter status)
-   - Feedback.rating = obrigatório (deve ter avaliação)
-
-4. **Validação de Rating:**
-   - @Min(1) e @Max(5) = rating deve estar entre 1 e 5 estrelas
-
-5. **Timestamps Automáticos:**
-   - Session.createdAt = preenchido automaticamente pela aplicação
-   - Feedback.createdAt = preenchido automaticamente pelo banco
-
----
-
-## Licença
-
-Este projeto foi desenvolvido como trabalho acadêmico para a disciplina Java Advanced - FIAP.
-
----
-
-## Repositório
-
-**GitHub:** https://github.com/letprado/libras-api.git

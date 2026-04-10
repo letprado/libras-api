@@ -21,7 +21,7 @@ public class Session {
     private Long interpreterId;
 
     @Column(nullable = false)
-    private String status; // agora aceita qualquer valor enviado no body
+    private String status;
 
     @Column(name = "started_at")
     private LocalDateTime startedAt;
@@ -32,13 +32,15 @@ public class Session {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    // Feedbacks são ignorados na serialização JSON
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
     @OneToMany(mappedBy = "session", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Feedback> feedbacks = new ArrayList<>();
 
-    // -------------------- Getters e Setters --------------------
     public Long getId() { return id; }
+
 
     public Long getRequesterId() { return requesterId; }
     public void setRequesterId(Long requesterId) { this.requesterId = requesterId; }
@@ -56,6 +58,9 @@ public class Session {
     public void setEndedAt(LocalDateTime endedAt) { this.endedAt = endedAt; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
+
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 
     public List<Feedback> getFeedbacks() { return feedbacks; }
     public void setFeedbacks(List<Feedback> feedbacks) { this.feedbacks = feedbacks; }
