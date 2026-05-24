@@ -10,6 +10,16 @@ A pipeline foi construída utilizando o **Azure DevOps** com a abordagem de conf
 2. **Integração Contínua (CI):** Para reproduzir, basta realizar um *Push* para a branch `main` ou disparar a pipeline manualmente no painel do Azure DevOps. A esteira provisionará uma máquina Ubuntu, configurará o Java 17, executará o *Build* via Maven e publicará o artefato (`.jar`) em um contêiner de *Drop*.
 3. **Entrega Contínua (CD):** Após o sucesso do CI, a *Release Pipeline* (configurada no portal do Azure DevOps) realiza o download do artefato gerado e faz o *Deploy* automático no **Azure App Service** (Linux), disponibilizando a aplicação na nuvem.
 
+---
+
+## 🎥 Vídeo Demonstrando o Funcionamento da Solução
+
+Para visualizar o funcionamento completo da aplicação, incluindo execução da API, integração com banco de dados Oracle, pipeline CI/CD e deploy em nuvem Azure:
+
+**🔗 Vídeo no YouTube:** [https://youtu.be/CnjgeTYokK8](https://youtu.be/CnjgeTYokK8)
+
+---
+
 ## 🧪 Como Testar a Aplicação (Scripts JSON para CRUD)
 
 O professor pode reproduzir os testes e validar o funcionamento da aplicação e a persistência no banco de dados utilizando a documentação interativa (Swagger) que já está em produção na nuvem:
