@@ -14,8 +14,7 @@ A pipeline foi construída utilizando o **Azure DevOps** com a abordagem de conf
 
 O professor pode reproduzir os testes e validar o funcionamento da aplicação e a persistência no banco de dados utilizando a documentação interativa (Swagger) que já está em produção na nuvem:
 
-**🔗 Acesse o Swagger:** `[COLOQUE_AQUI_A_URL_DO_SEU_AZURE_APP]/swagger-ui/index.html`
-*(Exemplo: https://librasja-api-fahccebwdkeje0eg.eastus-01.azurewebsites.net//swagger-ui/index.html)*
+**🔗 Acesse o Swagger:** `https://librasja-api-fahccebwdkeje0eg.eastus-01.azurewebsites.net//swagger-ui/index.html`
 
 Utilize os *bodies* (cargas úteis) abaixo nas rotas de `POST` (Criação) dentro do Swagger para testar as inserções no banco:
 
