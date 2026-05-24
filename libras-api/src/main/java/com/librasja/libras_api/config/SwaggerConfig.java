@@ -33,7 +33,7 @@ public class SwaggerConfig {
                         .version("1.0.0")
                         .description("API para gerenciamento de sessões de interpretação em Libras. Projeto acadêmico desenvolvido por estudante para a disciplina Java Advanced.")
                 )
-                .servers(List.of(new Server().url("http://localhost:8081").description("Servidor local")))
+                .servers(List.of(new Server().url("/").description("Mesma URL em que você abriu o Swagger")))
                 .externalDocs(new ExternalDocumentation()
                         .description("Repositório no GitHub")
                         .url("https://github.com/letprado/libras-api"));

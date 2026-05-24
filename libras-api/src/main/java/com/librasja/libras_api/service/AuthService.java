@@ -1,10 +1,13 @@
 package com.librasja.libras_api.service;
 
+import com.librasja.libras_api.dto.InterpreterRegistrationDto;
 import com.librasja.libras_api.dto.JwtAuthResponseDto;
 import com.librasja.libras_api.dto.LoginRequestDto;
-import com.librasja.libras_api.dto.UserRegistrationDto;
+import com.librasja.libras_api.dto.RequesterRegistrationDto;
+import com.librasja.libras_api.entity.InterpreterProfile;
 import com.librasja.libras_api.entity.Role;
 import com.librasja.libras_api.entity.User;
+import com.librasja.libras_api.repository.InterpreterProfileRepository;
 import com.librasja.libras_api.repository.UserRepository;
 import com.librasja.libras_api.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -22,50 +25,34 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final InterpreterProfileRepository interpreterProfileRepository;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public JwtAuthResponseDto register(UserRegistrationDto registrationDto) {
-        try {
-            log.info("=== INICIANDO REGISTRO DE USUÁRIO ===");
-            log.info("Username: {}", registrationDto.getUsername());
-            log.info("Email: {}", registrationDto.getEmail());
-            log.info("Role: {}", registrationDto.getRole());
-            
-            if (userRepository.existsByUsername(registrationDto.getUsername())) {
-                log.warn("Username já existe: {}", registrationDto.getUsername());
-                throw new IllegalArgumentException("Username já está em uso");
-            }
+    public JwtAuthResponseDto registerRequester(RequesterRegistrationDto dto) {
+        log.info("Registrando usuário surdo (REQUESTER): {}", dto.getNome());
+        User user = createUser(dto.getNome(), dto.getEmail(), dto.getPassword(), Role.REQUESTER);
+        return buildAuthResponse(user);
+    }
 
-            if (userRepository.existsByEmail(registrationDto.getEmail())) {
-                log.warn("Email já existe: {}", registrationDto.getEmail());
-                throw new IllegalArgumentException("Email já está em uso");
-            }
+    @Transactional
+    public JwtAuthResponseDto registerInterpreter(InterpreterRegistrationDto dto) {
+        log.info("Registrando intérprete: {}", dto.getNome());
+        User user = createUser(dto.getNome(), dto.getEmail(), dto.getPassword(), Role.INTERPRETER);
 
-            log.info("Criando novo User...");
-            User user = User.builder()
-                    .username(registrationDto.getUsername())
-                    .email(registrationDto.getEmail())
-                    .password(passwordEncoder.encode(registrationDto.getPassword()))
-                    .role(Role.valueOf(registrationDto.getRole().toUpperCase()))
-                    .active(1)
-                    .build();
+        InterpreterProfile profile = InterpreterProfile.builder()
+                .interpreter(user)
+                .especialidades(dto.getEspecialidades())
+                .descricaoCurta(dto.getDescricaoCurta())
+                .disponivel(dto.getDisponivel())
+                .build();
 
-            log.info("Salvando user no banco...");
-            userRepository.save(user);
-            log.info("User salvo com sucesso! ID: {}", user.getId());
+        interpreterProfileRepository.save(profile);
+        log.info("Perfil de intérprete criado para userId={}", user.getId());
 
-            log.info("Gerando JWT token...");
-            String token = jwtTokenProvider.generateTokenFromUsername(user.getUsername());
-            log.info("=== REGISTRO CONCLUÍDO COM SUCESSO ===");
-
-            return new JwtAuthResponseDto(token, user.getId(), user.getUsername(), user.getRole().toString());
-        } catch (Exception e) {
-            log.error("ERRO AO REGISTRAR USUÁRIO", e);
-            throw e;
-        }
+        return buildAuthResponse(user);
     }
 
     public JwtAuthResponseDto login(LoginRequestDto loginDto) {
@@ -81,6 +68,34 @@ public class AuthService {
         User user = userRepository.findByUsername(authentication.getName())
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
+        return buildAuthResponse(user, token);
+    }
+
+    private User createUser(String nome, String email, String password, Role role) {
+        if (userRepository.existsByUsername(nome)) {
+            throw new IllegalArgumentException("Nome de usuário já está em uso");
+        }
+        if (userRepository.existsByEmail(email)) {
+            throw new IllegalArgumentException("Email já está em uso");
+        }
+
+        User user = User.builder()
+                .username(nome)
+                .email(email)
+                .password(passwordEncoder.encode(password))
+                .role(role)
+                .active(1)
+                .build();
+
+        return userRepository.save(user);
+    }
+
+    private JwtAuthResponseDto buildAuthResponse(User user) {
+        String token = jwtTokenProvider.generateTokenFromUsername(user.getUsername());
+        return buildAuthResponse(user, token);
+    }
+
+    private JwtAuthResponseDto buildAuthResponse(User user, String token) {
         return new JwtAuthResponseDto(token, user.getId(), user.getUsername(), user.getRole().toString());
     }
 }

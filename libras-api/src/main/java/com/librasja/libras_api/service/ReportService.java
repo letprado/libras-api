@@ -42,14 +42,16 @@ public class ReportService {
             throw new IllegalArgumentException("Usuário não é um intérprete");
         }
 
-        List<Session> sessions = findSessionsInPeriod(
-                interpreter.getId(),
-                requestDto.getPeriodStart(),
-                requestDto.getPeriodEnd()
-        );
+        Long interpreterId = interpreter.getId();
+        LocalDateTime periodStart = requestDto.getPeriodStart();
+        LocalDateTime periodEnd = requestDto.getPeriodEnd();
+
+        List<Session> sessions = sessionRepository.findByInterpreterIdAndCreatedAtBetween(
+                interpreterId, periodStart, periodEnd);
 
         int totalSessions = sessions.size();
-        List<Feedback> feedbacks = collectFeedbacksFromSessions(sessions);
+        List<Feedback> feedbacks = feedbackRepository.findByInterpreterIdAndSessionCreatedAtBetween(
+                interpreterId, periodStart, periodEnd);
         int totalFeedbacks = feedbacks.size();
         double averageRating = calculateAverageRating(feedbacks);
 
@@ -113,20 +115,6 @@ public class ReportService {
         if (requestDto.getPeriodEnd().isAfter(now)) {
             throw new IllegalArgumentException("Data de fim não pode ser no futuro");
         }
-    }
-
-    private List<Session> findSessionsInPeriod(Long interpreterId, LocalDateTime startDate, LocalDateTime endDate) {
-        List<Session> allSessions = sessionRepository.findAll();
-        return allSessions.stream()
-                .filter(s -> s.getInterpreterId().equals(interpreterId))
-                .filter(s -> s.getCreatedAt() != null && !s.getCreatedAt().isBefore(startDate) && !s.getCreatedAt().isAfter(endDate))
-                .toList();
-    }
-
-    private List<Feedback> collectFeedbacksFromSessions(List<Session> sessions) {
-        return sessions.stream()
-                .flatMap(session -> feedbackRepository.findBySession(session).stream())
-                .toList();
     }
 
     private double calculateAverageRating(List<Feedback> feedbacks) {

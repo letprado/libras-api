@@ -31,8 +31,22 @@ A API permite:
 ## Como executar
 
 1. Configurar o banco Oracle no arquivo `src/main/resources/application.properties`.
-2. Garantir que o RabbitMQ esteja ativo se quiser testar a mensageria.
-3. Executar o projeto com Maven.
+2. Definir o segredo JWT via variável de ambiente (mínimo de 32 caracteres). Use o arquivo `.env.example` como referência — **não commite** o valor real no repositório.
+
+**Windows (PowerShell):**
+
+```powershell
+$env:JWT_SECRET="seu-segredo-forte-com-pelo-menos-32-caracteres"
+```
+
+**Linux/macOS:**
+
+```bash
+export JWT_SECRET="seu-segredo-forte-com-pelo-menos-32-caracteres"
+```
+
+3. Garantir que o RabbitMQ esteja ativo se quiser testar a mensageria.
+4. Executar o projeto com Maven.
 
 ```bash
 ./mvnw spring-boot:run
@@ -77,8 +91,9 @@ https://youtu.be/ljchAsbrSTw
 ## Autenticação
 
 As rotas públicas principais são:
-- `POST /auth/register`
-- `POST /auth/login`
+- `POST /auth/register/requester` — cadastro do usuário surdo (solicitante)
+- `POST /auth/register/interpreter` — cadastro do intérprete + perfil profissional
+- `POST /auth/login` — login único para os dois tipos
 
 Depois do login, o token retornado deve ser enviado no header:
 
@@ -86,37 +101,47 @@ Depois do login, o token retornado deve ser enviado no header:
 
 Perfis usados no projeto:
 
-- `REQUESTER`: cria sessão, registra feedback e gerencia seus agendamentos.
-- `INTERPRETER`: inicia e finaliza sessões, confirma agendamentos e gera relatórios.
+- `REQUESTER` (SURDO no modelo de dados): cria sessão, registra feedback e gerencia agendamentos.
+- `INTERPRETER` (INTERPRETE no modelo de dados): inicia e finaliza sessões, confirma agendamentos e gera relatórios.
 
 ## Rotas da API
 
 ### 1. Autenticação
 
-`POST /auth/register`
+`POST /auth/register/requester`
 
-Faz o cadastro de um usuário.
-
-Exemplo de body:
+Cadastro do usuário surdo — apenas nome, email e senha.
 
 ```json
 {
-	"username": "solicitante1",
-	"email": "solicitante1@email.com",
+	"nome": "Maria Silva",
+	"email": "maria@email.com",
+	"password": "123456"
+}
+```
+
+`POST /auth/register/interpreter`
+
+Cadastro do intérprete — inclui perfil (`interpreter_profile` no banco).
+
+```json
+{
+	"nome": "João Intérprete",
+	"email": "joao@email.com",
 	"password": "123456",
-	"role": "REQUESTER"
+	"especialidades": "Saúde, Jurídico",
+	"descricaoCurta": "Intérprete com 5 anos de experiência",
+	"disponivel": "SEG, TER, QUA"
 }
 ```
 
 `POST /auth/login`
 
-Realiza o login e retorna token, id do usuário, nome e perfil.
-
-Exemplo de body:
+Login único. No campo `username`, use o **nome** cadastrado.
 
 ```json
 {
-	"username": "solicitante1",
+	"username": "Maria Silva",
 	"password": "123456"
 }
 ```

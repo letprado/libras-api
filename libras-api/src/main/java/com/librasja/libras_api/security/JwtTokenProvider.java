@@ -4,10 +4,12 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
@@ -16,11 +18,25 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider {
 
-    @Value("${app.jwtSecret:my-super-secret-key-that-is-at-least-32-characters-long-for-hs512}")
+    private static final int MIN_SECRET_LENGTH = 32;
+
+    @Value("${app.jwtSecret}")
     private String jwtSecret;
 
     @Value("${app.jwtExpirationInMs:86400000}")
     private int jwtExpirationInMs;
+
+    @PostConstruct
+    void validateConfiguration() {
+        if (!StringUtils.hasText(jwtSecret)) {
+            throw new IllegalStateException(
+                    "JWT secret não configurado. Defina a variável de ambiente JWT_SECRET antes de iniciar a aplicação.");
+        }
+        if (jwtSecret.length() < MIN_SECRET_LENGTH) {
+            throw new IllegalStateException(
+                    "JWT secret deve ter pelo menos " + MIN_SECRET_LENGTH + " caracteres para HS512.");
+        }
+    }
 
     public String generateToken(Authentication authentication) {
         String username = authentication.getName();
