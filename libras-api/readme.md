@@ -1,5 +1,13 @@
 # Libras API
 
+## Links
+
+| Ambiente | URL |
+|---|---|
+| **Produção (Railway)** | https://libras-api-production.up.railway.app |
+| **Swagger (produção)** | https://libras-api-production.up.railway.app/swagger-ui/index.html |
+| **Swagger (local)** | http://localhost:8080/swagger-ui/index.html |
+
 ## Sobre o projeto
 
 Este projeto foi desenvolvido para a sprint com o objetivo de organizar o processo de atendimento com interpretação em Libras.
@@ -31,18 +39,11 @@ A API permite:
 ## Como executar
 
 1. Configurar o banco Oracle no arquivo `src/main/resources/application.properties`.
-2. Definir o segredo JWT via variável de ambiente (mínimo de 32 caracteres). Use o arquivo `.env.example` como referência — **não commite** o valor real no repositório.
+2. Criar um arquivo `.env` na raiz do projeto com as variáveis abaixo — **não commite esse arquivo**:
 
-**Windows (PowerShell):**
-
-```powershell
-$env:JWT_SECRET="seu-segredo-forte-com-pelo-menos-32-caracteres"
 ```
-
-**Linux/macOS:**
-
-```bash
-export JWT_SECRET="seu-segredo-forte-com-pelo-menos-32-caracteres"
+JWT_SECRET=seu-segredo-forte-com-minimo-64-caracteres-para-hs512
+JWT_EXPIRATION_MS=86400000
 ```
 
 3. Garantir que o RabbitMQ esteja ativo se quiser testar a mensageria.
@@ -58,23 +59,12 @@ No Windows também pode ser usado:
 mvnw.cmd spring-boot:run
 ```
 
-Por padrão a aplicação sobe na porta `8081`.
-
-## Documentação Swagger
-
-Depois de iniciar a aplicação, a documentação pode ser acessada em:
-
-`http://localhost:8081/swagger-ui/index.html`
+Por padrão a aplicação sobe na porta `8080`.
 
 ## Vídeos da entrega
 
-Vídeo principal da sprint, dentro do limite de até 5 minutos:
-
-https://youtu.be/oy8BbPAjFag
-
-Vídeo mais completo, com demonstração maior do projeto:
-
-https://youtu.be/ljchAsbrSTw
+- Vídeo principal da sprint (até 5 min): https://youtu.be/oy8BbPAjFag
+- Vídeo completo com demonstração: https://youtu.be/ljchAsbrSTw
 
 ## Fluxo básico de uso
 
