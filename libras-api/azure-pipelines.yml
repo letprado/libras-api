@@ -17,7 +17,7 @@ steps:
 - task: Maven@4
   displayName: 'Build e Testes (Maven Package)'
   inputs:
-    mavenPomFile: 'libras-api/libras-api/pom.xml'
+    mavenPomFile: 'libras-api/pom.xml'
     mavenOptions: '-Xmx3072m'
     javaHomeOption: 'JDKVersion'
     jdkVersionOption: '17'
