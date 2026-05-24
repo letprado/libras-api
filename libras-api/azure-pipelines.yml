@@ -15,7 +15,7 @@ steps:
     jdkSourceOption: 'PreInstalled'
 
 - task: Maven@4
-  displayName: 'Build da API'
+  displayName: 'Build da API (Ignorando Testes)'
   inputs:
     mavenPomFile: 'libras-api/pom.xml'
     mavenOptions: '-Xmx3072m'
@@ -24,3 +24,19 @@ steps:
     jdkArchitectureOption: 'x64'
     publishJUnitResults: false
     goals: 'clean package -DskipTests'
+
+# --- NOVAS ETAPAS ADICIONADAS ABAIXO ---
+
+- task: CopyFiles@2
+  displayName: 'Copiar o pacote gerado (.jar)'
+  inputs:
+    SourceFolder: '$(system.defaultworkingdirectory)/libras-api/target'
+    Contents: '*.jar'
+    TargetFolder: '$(build.artifactstagingdirectory)'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publicar o Artefato (Drop)'
+  inputs:
+    PathtoPublish: '$(build.artifactstagingdirectory)'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
