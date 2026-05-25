@@ -10,8 +10,8 @@
 |---|---|
 | **API em produção (Railway)** | https://libras-api-production.up.railway.app |
 | **Documentação Swagger** | https://libras-api-production.up.railway.app/swagger-ui/index.html |
-| **Vídeo da sprint (até 5 min)** | em andamento |
-| **Vídeo completo de demonstração** | em andamento |
+| **Vídeo demo da API (Swagger)** | https://youtu.be/ljchAsbrSTw?si=P4VUkNamhbGny8j- |
+| **Vídeo da aplicação (interface mobile)** | em andamento |
 
 ---
 

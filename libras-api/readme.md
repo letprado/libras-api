@@ -1,4 +1,4 @@
-# Libras API
+b# Libras API
 
 ## Links
 
@@ -63,8 +63,8 @@ Por padrão a aplicação sobe na porta `8080`.
 
 ## Vídeos da entrega
 
-- Vídeo principal da sprint (até 5 min): https://youtu.be/oy8BbPAjFag
-- Vídeo completo com demonstração: https://youtu.be/ljchAsbrSTw
+- Vídeo demo da API (Swagger): https://youtu.be/ljchAsbrSTw?si=P4VUkNamhbGny8j-
+- Vídeo da aplicação (interface mobile): em andamento
 
 ## Fluxo básico de uso
 
